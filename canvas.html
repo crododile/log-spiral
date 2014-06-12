@@ -1,0 +1,146 @@
+
+
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	<!-- Load the Paper.js library -->
+<script type ='text/javascript' src='./paperjs-v0.9.18/dist/paper-full.min.js'/paper.js></script>
+	<!-- Define inlined JavaScript -->
+	    <script type="text/javascript">
+	      window.onload = function() {
+        var canvas = document.getElementById('myCanvas');
+				var fib = [1,1];
+				var fibs = [];
+				var temp = 3;
+				
+        paper.setup(canvas);
+        myPath = new paper.Path();
+        paper.view.draw();
+
+        var tool = new paper.Tool();
+				var firstPoint = new paper.Point(600,300)
+				var fPath = new paper.Path();
+				var angle = 0;
+				
+				// fPath.strokeColor = 'orange';
+				myPath.strokeColor = 'orange';
+				fPath.add(firstPoint);
+				var points = []
+				mids = []
+				circles = [];
+				arcs=[];
+				
+				arcRadians2 = function(center, radius, start, finish, direction){
+					var startX, startY, start, 
+							throughX, throughY, through,
+							endX, endY, end;
+							
+							
+					startX = Math.cos(radianStart) *  radius + center.x;
+			    startY = Math.sin(radianStart) * radius + center.y;
+					start = new paper.Point({x: startX, y: startY});
+					
+					throughX = Math.cos(radianThrough) * radius + center.x;
+					throughY = Math.sin(radianThrough) * radius + center.y;
+					through = new paper.Point({x: throughX, y: throughY});
+				
+					endX = Math.cos(radianEnd) *  radius + center.x;
+					endY = Math.sin(radianEnd) * radius + center.y;
+					end = new paper.Point({x: endX, y: endY})
+				
+					return new paper.Path.Arc({
+					    from: start,
+					    through: through,
+					    to: end
+					});
+				};
+				
+				arcRadians = function(center, radius, radianStart, radianThrough, radianEnd){
+					var startX = Math.cos(radianStart) *  radius + center.x;
+					var startY = Math.sin(radianStart) * radius + center.y;
+					var start = new paper.Point({x: startX, y: startY});
+				
+					var throughX = Math.cos(radianThrough) * radius + center.x;
+					var throughY = Math.sin(radianThrough) * radius + center.y;
+					var through = new paper.Point({x: throughX, y: throughY});
+				
+					var endX = Math.cos(radianEnd) *  radius + center.x;
+					var endY = Math.sin(radianEnd) * radius + center.y;
+					var end = new paper.Point({x: endX, y: endY})
+				
+					return new paper.Path.Arc({
+					    from: start,
+					    through: through,
+					    to: end
+					});
+				}
+				
+        tool.onMouseDown = function(event) {
+          myPath.add(event.point);
+					points.push(event.point);
+			  }
+				
+					var cPath = new paper.Path();
+					cPath.add(firstPoint);
+					cPath.strokeColor = 'red'
+				
+				for(var l = 0; l<90; l ++){
+					temp = fib[1];
+					fib[1]= fib[0]+fib[1];
+					fib[0] = temp;
+					fibs.push(temp);
+					var e = fPath.lastSegment.point
+					fPath.add(
+						fPath.lastSegment.point
+						  .add({length: fib[1]/30, angle: angle += 90})
+						);
+						
+						if (l > 3){
+							arcs.push(
+								arcRadians(fPath.segments[fPath.segments.length -4].point,
+							 fib[0]/30,
+							 ((l%4) * Math.PI)/2 , ((l%4) * Math.PI)/2 + 1, 
+							  ((l%4) *Math.PI)/2 + Math.PI /2 )	 
+							);
+					
+						 circles.push(new paper.Path.Circle({
+						     center: 
+								 fPath.segments[fPath.segments.length -4].point,
+						     radius: fib[0]/30,
+						     strokeColor: 'pink',
+						 }))
+					 }		
+				}
+
+				var dPath = new paper.Path();
+				dPath.add(firstPoint);
+				dPath.strokeColor = 'red'
+	
+				var ePath = new paper.Path();
+				ePath.add(firstPoint);
+				ePath.strokeColor= 'lightblue'
+				
+		paper.view.onFrame = function(event) {
+			for( var p = 0; p <circles.length; p++){
+				// arcs[p].rotate(1, firstPoint);
+				circles[p].rotate(-1, firstPoint);
+			}
+	// 		// fPath.rotate( -1,  firstPoint);
+	// 		console.log(fibs[tracker], tiz)
+			// dPath.add(dPath.lastSegment.point.add({x: -1, y: 1} ))
+	// 		cPath.add(cPath.lastSegment.point.add({x:-tiz, y:-tiz}))
+	// 		cPath.rotate(-1, firstPoint)
+	// 		dPath.rotate(-1, firstPoint)
+	// 		
+	// 		ePath.add(ePath.lastSegment.point.add({x:tiz, y:tiz}))
+	// 		ePath.rotate(-1, firstPoint)
+			
+			}
+    }
+	    </script>
+	</head>
+	<body style='background-color: darkblue'>
+	    <canvas id="myCanvas" resize></canvas>
+	</body>
+	</html>
