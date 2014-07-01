@@ -24,29 +24,38 @@
 				var angle = 0;
 				
 				// fPath.strokeColor = 'orange';
-				myPath.strokeColor = 'orange';
+				// myPath.strokeColor = 'orange';
 				fPath.add(firstPoint);
 				var points = []
 				mids = []
 				circles = [];
 				arcs=[];
 				
-				arcRadians2 = function(center, radius, start, finish, direction){
+				arcRadians2 = function(center, radius, startAngle, endAngle, clockwise){
 					var startX, startY, start, 
 							throughX, throughY, through,
-							endX, endY, end;
+							endX, endY, end;			
 							
+							debugger
 							
-					startX = Math.cos(radianStart) *  radius + center.x;
-			    startY = Math.sin(radianStart) * radius + center.y;
+					startX = Math.cos(startAngle) * radius + center.x;
+			    startY = Math.sin(startAngle) * radius + center.y;
 					start = new paper.Point({x: startX, y: startY});
 					
-					throughX = Math.cos(radianThrough) * radius + center.x;
-					throughY = Math.sin(radianThrough) * radius + center.y;
-					through = new paper.Point({x: throughX, y: throughY});
-				
-					endX = Math.cos(radianEnd) *  radius + center.x;
-					endY = Math.sin(radianEnd) * radius + center.y;
+					if ( clockwise === true ){	
+						throughX = Math.cos(startAngle + 0.1) * radius + center.x;
+						throughY = Math.sin(startAngle + 0.1) * radius + center.y;
+						through = new paper.Point({x: throughX, y: throughY});
+				  }
+					else {
+						throughX = Math.cos(startAngle - 0.1) * radius + center.x;
+						throughY = Math.sin(startAngle - 0.1) * radius + center.y;
+						through = new paper.Point({x: throughX, y: throughY});
+					}
+					
+			
+					endX = Math.cos(endAngle) *  radius + center.x;
+					endY = Math.sin(endAngle) * radius + center.y;
 					end = new paper.Point({x: endX, y: endY})
 				
 					return new paper.Path.Arc({
@@ -72,7 +81,9 @@
 					return new paper.Path.Arc({
 					    from: start,
 					    through: through,
-					    to: end
+					    to: end,
+							strokeColor: 'green',
+							strokeWidth: 10
 					});
 				}
 				
@@ -98,18 +109,18 @@
 						
 						if (l > 3){
 							arcs.push(
-								arcRadians(fPath.segments[fPath.segments.length -4].point,
+								arcRadians2(fPath.segments[fPath.segments.length -4].point,
 							 fib[0]/30,
-							 ((l%4) * Math.PI)/2 , ((l%4) * Math.PI)/2 + 1, 
-							  ((l%4) *Math.PI)/2 + Math.PI /2 )	 
+							 ((l%4) * Math.PI)/2 ,
+							  ((l%4) *Math.PI)/2 + Math.PI /2, true)
 							);
-					
-						 circles.push(new paper.Path.Circle({
-						     center: 
-								 fPath.segments[fPath.segments.length -4].point,
-						     radius: fib[0]/30,
-						     strokeColor: 'pink',
-						 }))
+							
+ 						 circles.push(new paper.Path.Circle({
+ 						     center: 
+ 								 fPath.segments[fPath.segments.length -4].point,
+ 						     radius: fib[0]/30,
+ 						     strokeColor: 'pink',
+ 						 }))
 					 }		
 				}
 
@@ -123,7 +134,7 @@
 				
 		paper.view.onFrame = function(event) {
 			for( var p = 0; p <circles.length; p++){
-				// arcs[p].rotate(1, firstPoint);
+				arcs[p].rotate(-1, firstPoint);
 				circles[p].rotate(-1, firstPoint);
 			}
 	// 		// fPath.rotate( -1,  firstPoint);
